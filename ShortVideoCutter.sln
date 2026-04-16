@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortVideoCutter", "ShortVideoCutter\ShortVideoCutter.csproj", "{900381DF-4EDB-4552-85E4-B2522F7A9416}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortVideoCutter.Tests", "ShortVideoCutter.Tests\ShortVideoCutter.Tests.csproj", "{09546A72-5A4E-41C1-8C8E-ED9F33392AA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{900381DF-4EDB-4552-85E4-B2522F7A9416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{900381DF-4EDB-4552-85E4-B2522F7A9416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{900381DF-4EDB-4552-85E4-B2522F7A9416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{900381DF-4EDB-4552-85E4-B2522F7A9416}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09546A72-5A4E-41C1-8C8E-ED9F33392AA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09546A72-5A4E-41C1-8C8E-ED9F33392AA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09546A72-5A4E-41C1-8C8E-ED9F33392AA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09546A72-5A4E-41C1-8C8E-ED9F33392AA5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A817812B-5193-4ADB-882C-5671D4D998BE}
+	EndGlobalSection
+EndGlobal
