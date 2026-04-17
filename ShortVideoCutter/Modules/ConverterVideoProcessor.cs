@@ -1,57 +1,70 @@
 ﻿using ShortVideoCutter.Extensions;
+using ShortVideoCutter.Interfaces;
 using ShortVideoCutter.Models;
 
 namespace ShortVideoCutter.Modules;
 
-public class ConverterVideo
+public class ConverterVideoProcessor : IConverterVideoProcessor
 {
+    private readonly IModuleIO _moduleIO;
+    private readonly IFFMpegModule _mpegModule;
+
+    public ConverterVideoProcessor(IModuleIO moduleIO, IFFMpegModule mpegModule)
+    {
+        _moduleIO = moduleIO;
+        _mpegModule = mpegModule;
+    }
+
     public void MergeMoments(Dictionary<int, List<MergeData>> mergeDict, string saveDirectory)
     {
         foreach (var listOfMergeData in mergeDict)
         {
             var mergePartsOfMomentDirectory = Path.Combine(saveDirectory, $"SplitMomentWithId{listOfMergeData.Key}({listOfMergeData.Value.Count}" +
                 $")_{DateTimeOffset.Now.ToUnixTimeMilliseconds()}");
-            StaticDI.ModuleIO.InitDirectory(mergePartsOfMomentDirectory);
+            _moduleIO.InitDirectory(mergePartsOfMomentDirectory);
+            // Check invalid separate moments
             if (!_CheckMergeDataOnCorrectSequence(listOfMergeData.Value))
             {
-                StaticDI.ModuleIO.FileWriteAllText(
+                _moduleIO.FileWriteAllText(
                     $"{Path.Combine(mergePartsOfMomentDirectory, $"WrongSeq({listOfMergeData.Value.Count}).txt")}",
-                    $"Have parts: {string.Join(", ", listOfMergeData.Value.Select(x => x.part))}\n" +
+                    $"Have parts: {string.Join(", ", listOfMergeData.Value.Select(x => x.Part))}\n" +
                     $"Have {listOfMergeData.Value.CountPartsConditionStatus(MomentStatus.Invalid)} invalid parts");
                 continue;
             }
 
+            // If is just one moment in sequence
             if (listOfMergeData.Value.Count == 1 && listOfMergeData.Value.SingleOrDefault() is { } singleMergeMomentData)
             {
-                StaticDI.FFMpegModule.TrimedVideo(
-                    singleMergeMomentData.episode.GetSavePath(), 
-                    singleMergeMomentData.moment.GetSavePath(), 
-                    singleMergeMomentData.moment.Start, singleMergeMomentData.moment.SecondsDuration);
+                _mpegModule.TrimedVideo(
+                    singleMergeMomentData.Episode.GetSavePath(),
+                    singleMergeMomentData.Moment.GetSavePath(),
+                    singleMergeMomentData.Moment.Start, singleMergeMomentData.Moment.SecondsDuration);
                 continue;
             }
 
+            // Trim separete moment
             foreach (var mergeData in listOfMergeData.Value)
             {
-                StaticDI.FFMpegModule.TrimedVideo(
-                    mergeData.episode.GetSavePath(), 
-                    Path.Combine(mergePartsOfMomentDirectory, $"{mergeData.saveName}.mp4"),
-                    mergeData.moment.Start, mergeData.moment.SecondsDuration);
+                _mpegModule.TrimedVideo(
+                    mergeData.Episode.GetSavePath(),
+                    Path.Combine(mergePartsOfMomentDirectory, $"{mergeData.SaveName}.mp4"),
+                    mergeData.Moment.Start, mergeData.Moment.SecondsDuration);
             }
             var finalPathToSaveMergedMoment = Path.Combine(mergePartsOfMomentDirectory, "Final");
-            StaticDI.ModuleIO.InitDirectory(finalPathToSaveMergedMoment);
-            StaticDI.FFMpegModule.MergeMoments(
+            _moduleIO.InitDirectory(finalPathToSaveMergedMoment);
+            _mpegModule.MergeMoments(
                 listOfMergeData.Value
-                    .OrderBy(x=>x.part)
-                    .Select(x=> Path.Combine(mergePartsOfMomentDirectory, $"{x.saveName}.mp4"))
-                    .ToArray(), 
+                    .OrderBy(x => x.Part)
+                    .Select(x => Path.Combine(mergePartsOfMomentDirectory, $"{x.SaveName}.mp4"))
+                    .ToArray(),
                 finalPathToSaveMergedMoment);
         }
     }
 
-    private bool _CheckMergeDataOnCorrectSequence(List<MergeData> mergeDatas)
+    public bool _CheckMergeDataOnCorrectSequence(List<MergeData> mergeDatas)
     {
-        var set = mergeDatas.Select(x => x.part).ToHashSet();
-
+        var set = mergeDatas.Select(x => x.Part).ToHashSet();
+        // List of moment in line sequence and not contain invalid moment
         return mergeDatas.CountPartsConditionStatus(MomentStatus.Invalid) == 0
             && set.Count == mergeDatas.Count
             && set.Sum() == set.Count * (set.Count + 1) / 2;
@@ -64,18 +77,20 @@ public class ConverterVideo
             return true;
         }
 
-        if (StaticDI.ModuleIO.FileExists(moment.GetSavePath()))
+        // Check on exist .txt
+        if (_moduleIO.FileExists(moment.GetSavePath()))
         {
-            var correctEpisodePath = StaticDI.ModuleIO.GetAllTextLines(moment.GetSavePath()).LastOrDefault();
-            if (correctEpisodePath != null && StaticDI.ModuleIO.FileExists(correctEpisodePath))
+            var correctEpisodePath = _moduleIO.GetAllTextLines(moment.GetSavePath()).LastOrDefault();
+            // Check on exist path to correct episode in file
+            if (correctEpisodePath != null && _moduleIO.FileExists(correctEpisodePath))
             {
-                StaticDI.FFMpegModule.TrimedVideo(correctEpisodePath, moment.GetSavePath(true), moment.Start, moment.SecondsDuration);
+                _mpegModule.TrimedVideo(correctEpisodePath, moment.GetSavePath(true), moment.Start, moment.SecondsDuration);
                 moment.RepairMoment();
                 return true;
             }
             return false;
         }
-        StaticDI.ModuleIO.FileWriteAllText(moment.GetSavePath(), moment.Note);
+        _moduleIO.FileWriteAllText(moment.GetSavePath(), moment.Note);
         return false;
     }
 
@@ -86,7 +101,7 @@ public class ConverterVideo
         ProcessedPartsMoments(seasons, saveDirectory);
     }
 
-    private void ProcessedSimpleMoments(List<Season> seasons, string saveDirectory)
+    public void ProcessedSimpleMoments(List<Season> seasons, string saveDirectory)
     {
         var actualStatus = MomentStatus.Simple;
 
@@ -100,13 +115,13 @@ public class ConverterVideo
                     {
                         continue;
                     }
-                    StaticDI.FFMpegModule.TrimedVideo(episode.GetSavePath(), moment.GetSavePath(), moment.Start, moment.SecondsDuration);
+                    _mpegModule.TrimedVideo(episode.GetSavePath(), moment.GetSavePath(), moment.Start, moment.SecondsDuration);
                 }
             }
         }
     }
 
-    private void ProcessedInvalidMoments(List<Season> seasons, string saveDirectory)
+    public void ProcessedInvalidMoments(List<Season> seasons, string saveDirectory)
     {
         var actualStatus = MomentStatus.Invalid;
 
@@ -127,7 +142,7 @@ public class ConverterVideo
         }
     }
 
-    private void ProcessedPartsMoments(List<Season> seasons, string saveDirectory)
+    public void ProcessedPartsMoments(List<Season> seasons, string saveDirectory)
     {
         var forGlobalMergeMoments = new Dictionary<int, List<MergeData>>();
 
@@ -143,14 +158,14 @@ public class ConverterVideo
                     {
                         continue;
                     }
-                    var data = new MergeData(moment, episode, partData.data.part, moment.GetSaveName(season, episode));
-                    if (partData.data.globalId.HasValue)
+                    var data = new MergeData(moment, episode, partData.data.Part, moment.GetSaveName(season, episode));
+                    if (partData.data.GlobalId.HasValue)
                     {
-                        AddedToDict(forGlobalMergeMoments, partData.data.globalId.Value, data);
+                        forGlobalMergeMoments.AddItemInListInDict(partData.data.GlobalId.Value, data);
                     }
                     else
                     {
-                        AddedToDict(forMergeInSeasons, partData.data.id, data);
+                        forMergeInSeasons.AddItemInListInDict(partData.data.Id, data);
                     }
                 }
             }
@@ -158,20 +173,5 @@ public class ConverterVideo
         }
 
         MergeMoments(forGlobalMergeMoments, saveDirectory);
-    }
-
-    private void AddedToDict(Dictionary<int, List<MergeData>> src, int id, MergeData data)
-    {
-        if (src.TryGetValue(id, out var list))
-        {
-            list.Add(data);
-        }
-        else
-        {
-            src.Add(id, new List<MergeData>()
-            {
-                data
-            });
-        }
     }
 }

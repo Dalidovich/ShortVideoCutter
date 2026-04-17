@@ -1,6 +1,6 @@
 ﻿namespace ShortVideoCutter.Interfaces;
 
-public interface IFFMpegModule
+public interface IFFMpegModule : IService
 {
     public void TrimedVideo(string inputFile, string outputFile, float startTime, float duration);
 

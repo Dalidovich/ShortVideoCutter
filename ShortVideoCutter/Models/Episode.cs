@@ -35,7 +35,6 @@ public class Episode
     public void SetSavePath(string saveDirectory, Season season)
     {
         var dir = season.GetSeasonPath(saveDirectory);
-        StaticDI.ModuleIO.InitDirectory(dir);
         _savePath = Path.Combine(dir, $"{GetSaveName(season.GetSaveName())}.mp4");
     }
 

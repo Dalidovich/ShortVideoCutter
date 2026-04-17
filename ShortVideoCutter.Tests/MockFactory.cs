@@ -15,7 +15,7 @@ public class MockFactory
         mock.Setup(x => x.InitDirectory(It.IsAny<string>()));
         mock.Setup(x => x.FileExists(It.IsAny<string>()))
             .Returns((string path) =>
-            {                
+            {
                 return !path.EndsWith("txt");
             });
         mock.Setup(x => x.FileWriteAllText(It.IsAny<string>(), It.IsAny<string>()))
@@ -54,7 +54,7 @@ public class MockFactory
             {
                 foreach (var episode in season.Episodes)
                 {
-                    episode.SetDownloadLint(string.Format(DownloadLinkEpisodeFormat,season.GetSaveName(),episode.EpisodeNumber));
+                    episode.SetDownloadLint(string.Format(DownloadLinkEpisodeFormat, season.GetSaveName(), episode.EpisodeNumber));
                 }
             });
 

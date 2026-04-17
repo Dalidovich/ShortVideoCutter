@@ -5,9 +5,16 @@ namespace ShortVideoCutter.Modules;
 
 public class FFMpegModule : IFFMpegModule
 {
+    private readonly IModuleIO _moduleIO;
+
+    public FFMpegModule(IModuleIO moduleIO)
+    {
+        _moduleIO = moduleIO;
+    }
+
     public void TrimedVideo(string inputFile, string outputFile, float startTime, float duration)
     {
-        if (StaticDI.ModuleIO.FileExists(outputFile))
+        if (_moduleIO.FileExists(outputFile))
         {
             Console.WriteLine($"Moment {Path.GetFileName(outputFile)} alredy exist");
             return;

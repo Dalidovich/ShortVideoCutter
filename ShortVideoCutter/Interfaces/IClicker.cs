@@ -2,7 +2,7 @@
 
 namespace ShortVideoCutter.Interfaces;
 
-public interface IClicker
+public interface IClicker : IService
 {
     public Task InitDownloadLinks(List<Season> seasons);
 

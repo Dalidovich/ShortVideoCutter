@@ -47,7 +47,6 @@ public class Moment
     internal void SetSavePath(string saveDirectory, Season season, Episode episode)
     {
         var dir = Path.Combine(saveDirectory, season.GetSaveName(), $"moments");
-        StaticDI.ModuleIO.InitDirectory(dir);
         _savePath = Path.Combine(dir, GetSaveName(season, episode));
     }
 
@@ -77,7 +76,7 @@ public class Moment
         var partPattenr = new Regex(@"ID(\d+)PART(\d+)(?:GLOB(\d+))?");
         if (partPattenr.Match(Note) is { Groups.Count: 4 } matches)
         {
-            var nums = matches.Groups.Values.Skip(1).Select(x=>x.Value).ToArray();
+            var nums = matches.Groups.Values.Skip(1).Select(x => x.Value).ToArray();
             if (int.TryParse(nums[0], out var id) && int.TryParse(nums[1], out var partSeq))
             {
                 if (int.TryParse(nums[2], out int globPart))

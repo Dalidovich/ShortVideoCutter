@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Execution;
 using ShortVideoCutter.Models;
-using System.Runtime.Intrinsics.X86;
 
 namespace ShortVideoCutter.Tests;
 

@@ -35,7 +35,7 @@ internal class InputDeviceImitationManager
         {
             mouse_event(ButtonsCnst.MOUSEEVENTF_LEFTDOWN | ButtonsCnst.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
         }
-            
+
     }
 
     public static void Click(byte VK_KEYCODE)

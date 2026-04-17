@@ -1,22 +1,19 @@
-﻿namespace ShortVideoCutter.Modules;
+﻿using ShortVideoCutter.Interfaces;
 
-public class Downloader
+namespace ShortVideoCutter.Modules;
+
+public class Downloader : IDownloader
 {
-    private readonly bool _isEnable = true;
+    private readonly IModuleIO _moduleIO;
 
-    public Downloader(bool value)
+    public Downloader(IModuleIO moduleIO)
     {
-        _isEnable = value;
+        _moduleIO = moduleIO;
     }
 
     public async Task Load(string url, string outputPath)
     {
-        if (!_isEnable)
-        {
-            return;
-        }
-
-        if (StaticDI.ModuleIO.FileExists(outputPath))
+        if (_moduleIO.FileExists(outputPath))
         {
             return;
         }
@@ -54,7 +51,7 @@ public class Downloader
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                StaticDI.ModuleIO.DeleteFile(outputPath);
+                _moduleIO.DeleteFile(outputPath);
             }
         }
     }

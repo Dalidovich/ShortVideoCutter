@@ -1,4 +1,6 @@
-﻿using ShortVideoCutter.Modules;
+﻿using ShortVideoCutter.DI;
+using ShortVideoCutter.Interfaces;
+using ShortVideoCutter.Modules;
 
 namespace ShortVideoCutter;
 
@@ -8,11 +10,18 @@ public class Program
     {
         // time for open and focus new browser tab
         await Task.Delay(5000);
+
+        DIOwner.DefaultRegistrate();
+
         var data = File.ReadAllText(@"path to txt file");
-        var saveDirectory = @"C:\Users\pops\Downloads\testDownloadVideo";
-        StaticDI.Create(new Clicker(), new(), new Downloader(true), new(), new ModuleIO(true), new FFMpegModule());
-        var seasons = StaticDI.Mapper.Init(data, saveDirectory);
-        await StaticDI.Clicker.InitDownloadLinks(seasons);
-        StaticDI.Converter.Processed(seasons, saveDirectory);
+        var saveDirectory = @"save dir";
+
+        var mapper = DIOwner.DI.GetService<IMapper>();
+        var clicker = DIOwner.DI.GetService<IClicker>();
+        var converter = DIOwner.DI.GetService<IConverterVideoProcessor>();
+
+        var seasons = mapper.Init(data, saveDirectory);
+        await clicker.InitDownloadLinks(seasons);
+        converter.Processed(seasons, saveDirectory);
     }
 }

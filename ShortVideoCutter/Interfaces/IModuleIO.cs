@@ -1,6 +1,6 @@
 ﻿namespace ShortVideoCutter.Interfaces;
 
-public interface IModuleIO
+public interface IModuleIO : IService
 {
     public void InitDirectory(string directory);
 

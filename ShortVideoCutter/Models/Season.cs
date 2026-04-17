@@ -23,7 +23,7 @@ public class Season
         var name = (string)EnName.Clone();
         foreach (var item in Constants.UnavailableCharactersInFileName)
         {
-            name= name.Replace(item, string.Empty);
+            name = name.Replace(item, string.Empty);
         }
         return name;
     }

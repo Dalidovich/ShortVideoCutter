@@ -10,6 +10,15 @@ public class Clicker : IClicker
     private const string _linkModifyPart = "#rewind={0}_seriya_na_{1}_minute_{2}_sekunde";
     private const string _linkModifyPartForAddition = "#rewind=Доп._seriya_na_{1}_minute_{2}_sekunde";
 
+    private readonly IModuleIO _moduleIO;
+    private readonly IDownloader _downloader;
+
+    public Clicker(IModuleIO moduleIO, IDownloader downloader)
+    {
+        _moduleIO = moduleIO;
+        _downloader = downloader;
+    }
+
     public async Task InitDownloadLinks(List<Season> seasons)
     {
         foreach (var season in seasons)
@@ -22,7 +31,7 @@ public class Clicker : IClicker
     {
         foreach (var episode in season.Episodes)
         {
-            if (StaticDI.ModuleIO.FileExists(episode.GetSavePath()))
+            if (_moduleIO.FileExists(episode.GetSavePath()))
             {
                 Console.WriteLine($"episode {Path.GetFileName(episode.GetSavePath())} alredy exist");
                 continue;
@@ -39,12 +48,12 @@ public class Clicker : IClicker
             await Task.Delay(2 * _delayTime);
             InputDeviceImitationManager.Click(ButtonsCnst.VK_F5);
             await Task.Delay(2 * _delayTime);
-            // on request
+            // On request
             InputDeviceImitationManager.MouseClick((1228, 349), true);
             await Task.Delay(1 * _delayTime);
-            // on open in new tab
+            // On open in new tab
             InputDeviceImitationManager.MouseClick((1301, 377));
-            // on addres link
+            // On addres link
             InputDeviceImitationManager.MouseClick((667, 63));
             await Task.Delay(1 * _delayTime);
             InputDeviceImitationManager.Copy();
@@ -56,7 +65,7 @@ public class Clicker : IClicker
             InputDeviceImitationManager.CompositeClick(ButtonsCnst.VK_CONTROL, ButtonsCnst.VK_W);
             await Task.Delay(2 * _delayTime);
 
-            await StaticDI.Downloader.Load(episode.GetDownloadLink(), episode.GetSavePath());
+            await _downloader.Load(episode.GetDownloadLink(), episode.GetSavePath());
         }
     }
 
@@ -66,5 +75,5 @@ public class Clicker : IClicker
         return $"{url}{string.Format(formatting, episode.EpisodeNumber, episode.Moments.First().StartTime.Minutes, episode.Moments.First().StartTime.Seconds)}";
     }
 
-    private void _NewWindow()=>InputDeviceImitationManager.CompositeClick(ButtonsCnst.VK_CONTROL, ButtonsCnst.VK_SHIFT, ButtonsCnst.VK_N);
+    private void _NewWindow() => InputDeviceImitationManager.CompositeClick(ButtonsCnst.VK_CONTROL, ButtonsCnst.VK_SHIFT, ButtonsCnst.VK_N);
 }
