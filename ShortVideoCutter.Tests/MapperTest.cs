@@ -1,6 +1,4 @@
 ﻿using FluentAssertions;
-using ShortVideoCutter.DI;
-using ShortVideoCutter.Interfaces;
 using ShortVideoCutter.Models;
 using ShortVideoCutter.Modules;
 

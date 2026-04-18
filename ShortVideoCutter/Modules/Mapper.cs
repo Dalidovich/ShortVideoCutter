@@ -1,5 +1,4 @@
-﻿using ShortVideoCutter.DI;
-using ShortVideoCutter.Interfaces;
+﻿using ShortVideoCutter.Interfaces;
 using ShortVideoCutter.Models;
 using System.Globalization;
 

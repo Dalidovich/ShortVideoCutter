@@ -6,17 +6,69 @@ namespace ShortVideoCutter.DI;
 
 public class LittleDI
 {
-    private Dictionary<Type, List<ServiceData>> services = new Dictionary<Type, List<ServiceData>>();
+    private Dictionary<Type, List<ServiceData>> _services;
 
-    public void AddService(Type serviceSignature, Type instanseServiceType, ServiceLifespan lifespan = ServiceLifespan.Singleton)
+    private List<InitServiceData> _initialBuffer;
+
+    public LittleDI()
     {
+        _services = new Dictionary<Type, List<ServiceData>>();
+        _initialBuffer = new List<InitServiceData>();
+    }
 
+    public void Run()
+    {
+        var order = new Dictionary<InitServiceData, int>();
 
-        ConstructorInfo[] constructors = instanseServiceType.GetConstructors();
+        foreach (var initData in _initialBuffer)
+        {
+            ConstructorInfo[] constructors = initData.InstanseServiceType.GetConstructors();
 
-        // last with many
-        var availableCtors = constructors.Where(IsSuitableCtor);
+            var condition = (ConstructorInfo x) =>
+                x.GetParameters().Length == 0 ||
+                x.GetParameters().All(p => _initialBuffer.Select(x => x.ServiceSignature)
+                                              .Contains(p.ParameterType));
 
+            // last with many
+            var fullishAvailableCtor = GetFullishAvailableConstructor(initData.InstanseServiceType, condition);
+
+            order.Add(initData, GetCount(fullishAvailableCtor, condition));
+        }
+
+        foreach (var initData in order.OrderBy(x => x.Value))
+        {
+            AddService(initData.Key.ServiceSignature, initData.Key.InstanseServiceType, initData.Key.ServiceLifespan);
+        }
+    }
+
+    private int GetCount(ConstructorInfo constructor, Func<ConstructorInfo, bool> condition)
+    {
+        var parametrs = constructor.GetParameters();
+        if (parametrs.Length == 0)
+            return 0;
+
+        var interfaceToinstanceType = (Type interfaceType) =>
+        {
+            return _initialBuffer
+                .Where(x => x.ServiceSignature == interfaceType)
+                .Select(x => x.InstanseServiceType);
+        };
+        var instanceParams = new List<Type>();
+        foreach (var param in parametrs)
+        {
+            var instType = interfaceToinstanceType(param.ParameterType);
+            instanceParams.AddRange(instType);
+        }
+
+        return instanceParams.Select(x =>
+            GetCount(GetFullishAvailableConstructor(x, condition), condition)).Sum() + 1;
+    }
+
+    private ConstructorInfo GetFullishAvailableConstructor(Type type,
+        Func<ConstructorInfo, bool> condition)
+    {
+        var constructors = type.GetConstructors();
+        var availableCtors = constructors.Where(condition);
         if (!availableCtors.Any())
         {
             throw new Exception("No constructor is suitable");
@@ -27,16 +79,29 @@ public class LittleDI
         {
             throw new Exception("Exist same length available constructors");
         }
-        var fullishAvailableCtor = availableCtors.OrderBy(x => x.GetParameters().Length).Last();
+        return availableCtors.OrderBy(x => x.GetParameters().Length).Last();
+    }
+
+    public void RegistrateService<TServiceSignature, TInstanseServiceType>(ServiceLifespan lifespan = ServiceLifespan.Singleton)
+    {
+        _initialBuffer.Add(new InitServiceData(typeof(TServiceSignature), typeof(TInstanseServiceType), lifespan));
+    }
+
+    private void AddService(Type serviceSignature, Type instanseServiceType, ServiceLifespan lifespan = ServiceLifespan.Singleton)
+    {
+        ConstructorInfo[] constructors = instanseServiceType.GetConstructors();
+
+        // last with many
+        var fullishAvailableCtor = GetFullishAvailableConstructor(instanseServiceType, IsSuitableCtor);
         var parametars = fullishAvailableCtor.GetParameters().Select(x => GetService(x.ParameterType));
 
         if (lifespan == ServiceLifespan.AlwaysNew)
         {
-            services.AddItemInListInDict(serviceSignature, new(null, lifespan, instanseServiceType, fullishAvailableCtor));
+            _services.AddItemInListInDict(serviceSignature, new(null, lifespan, instanseServiceType, fullishAvailableCtor));
         }
 
         var service = (IService)Activator.CreateInstance(instanseServiceType, parametars.ToArray());
-        services.AddItemInListInDict(serviceSignature, new(service, lifespan, instanseServiceType, fullishAvailableCtor));
+        _services.AddItemInListInDict(serviceSignature, new(service, lifespan, instanseServiceType, fullishAvailableCtor));
     }
 
     private bool IsSuitableCtor(ConstructorInfo constructorInfo)
@@ -56,7 +121,7 @@ public class LittleDI
 
     public IService GetService(Type serviceType)
     {
-        if (services.TryGetValue(serviceType, out var list))
+        if (_services.TryGetValue(serviceType, out var list))
         {
             if (list.FirstOrDefault() is ServiceData serviceData)
             {
@@ -66,7 +131,7 @@ public class LittleDI
         return default;
     }
 
-    public IService ReturnServiceBaseOnLifeSpan(ServiceData serviceData)
+    private IService ReturnServiceBaseOnLifeSpan(ServiceData serviceData)
     {
         return serviceData.Lifespan switch
         {
@@ -75,7 +140,7 @@ public class LittleDI
         };
     }
 
-    public IService CreateNewInstance(ServiceData serviceType)
+    private IService CreateNewInstance(ServiceData serviceType)
     {
         var parametars = serviceType.Constructor.GetParameters().Select(x => GetService(x.ParameterType));
         return (IService)Activator.CreateInstance(serviceType.ServiceType, parametars.ToArray());
@@ -83,6 +148,6 @@ public class LittleDI
 
     private bool ExistService(Type serviceType)
     {
-        return services.TryGetValue(serviceType, out var list);
+        return _services.TryGetValue(serviceType, out var list);
     }
 }

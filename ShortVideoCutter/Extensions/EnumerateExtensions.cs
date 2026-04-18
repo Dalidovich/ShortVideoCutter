@@ -1,6 +1,4 @@
-﻿using ShortVideoCutter.DI;
-using ShortVideoCutter.Interfaces;
-using ShortVideoCutter.Models;
+﻿using ShortVideoCutter.Models;
 
 namespace ShortVideoCutter.Extensions;
 
@@ -11,7 +9,7 @@ public static class EnumerateExtensions
         return mergeDatas.Count(x => x.Moment.GetStatus() == status);
     }
 
-    public static void AddItemInListInDict<TId,TItem>(this Dictionary<TId, List<TItem>> dict, TId id, TItem item)
+    public static void AddItemInListInDict<TId, TItem>(this Dictionary<TId, List<TItem>> dict, TId id, TItem item)
     {
         if (dict.TryGetValue(id, out var list))
         {

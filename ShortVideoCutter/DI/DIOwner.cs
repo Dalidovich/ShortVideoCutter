@@ -9,13 +9,13 @@ public static class DIOwner
 
     public static void DefaultRegistrate()
     {
-        // TODO: Order of registrate should not be indicated by a person
+        DI.RegistrateService<IConverterVideoProcessor, ConverterVideoProcessor>();
+        DI.RegistrateService<IModuleIO, ModuleIO>();
+        DI.RegistrateService<IMapper, Mapper>();
+        DI.RegistrateService<IDownloader, Downloader>();
+        DI.RegistrateService<IClicker, Clicker>();
+        DI.RegistrateService<IFFMpegModule, FFMpegModule>();
 
-        DI.AddService(typeof(IModuleIO), typeof(ModuleIO));
-        DI.AddService(typeof(IMapper), typeof(Mapper));
-        DI.AddService(typeof(IDownloader), typeof(Downloader));
-        DI.AddService(typeof(IClicker), typeof(Clicker));
-        DI.AddService(typeof(IFFMpegModule), typeof(FFMpegModule));
-        DI.AddService(typeof(IConverterVideoProcessor), typeof(ConverterVideoProcessor));
+        DI.Run();
     }
 }
