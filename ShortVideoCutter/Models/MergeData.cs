@@ -1,3 +1,3 @@
 ﻿namespace ShortVideoCutter.Models;
 
-public record MergeData(Moment Moment, Episode Episode, int Part, string SaveName);
+public record MergeData(Moment Moment, Episode Episode, Season Season, int Part, string SaveName);

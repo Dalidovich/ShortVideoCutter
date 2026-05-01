@@ -19,8 +19,10 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
     {
         foreach (var listOfMergeData in mergeDict)
         {
-            var mergePartsOfMomentDirectory = Path.Combine(saveDirectory, $"SplitMomentWithId{listOfMergeData.Key}({listOfMergeData.Value.Count}" +
-                $")_{DateTimeOffset.Now.ToUnixTimeMilliseconds()}");
+            var mergePartsOfMomentDirectory = 
+                Path.Combine(saveDirectory, 
+                $"SplitMomentWithId{listOfMergeData.Key}_{listOfMergeData.Value.FirstOrDefault()?.Season.EnName}_" +
+                $"({listOfMergeData.Value.Count})_{DateTimeOffset.Now.ToUnixTimeMilliseconds()}");
             _moduleIO.InitDirectory(mergePartsOfMomentDirectory);
             // Check invalid separate moments
             if (!_CheckMergeDataOnCorrectSequence(listOfMergeData.Value))
@@ -76,22 +78,36 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
         {
             return true;
         }
+        var momentWillbeCreate = false;
+        var invalidTxtCreated = _moduleIO.FileExists(moment.GetSavePath());
+        var deleteInvalidTxt = false;
+        var correctEpisodePath = moment.GetCorrectEpisodePathOrDefault();
 
-        // Check on exist .txt
-        if (_moduleIO.FileExists(moment.GetSavePath()))
+        // Invalid txt already created
+        if (invalidTxtCreated)
         {
-            var correctEpisodePath = _moduleIO.GetAllTextLines(moment.GetSavePath()).LastOrDefault();
-            // Check on exist path to correct episode in file
-            if (correctEpisodePath != null && _moduleIO.FileExists(correctEpisodePath))
-            {
-                _mpegModule.TrimedVideo(correctEpisodePath, moment.GetSavePath(true), moment.Start, moment.SecondsDuration);
-                moment.RepairMoment();
-                return true;
-            }
+            // if moment note has path - txt will be delete
+            deleteInvalidTxt = correctEpisodePath != null;
+            // else overwrite path 
+            correctEpisodePath ??= _moduleIO.GetAllTextLines(moment.GetSavePath()).LastOrDefault();
+        }
+        if (correctEpisodePath == null)
+        {
+            _moduleIO.FileWriteAllText(moment.GetSavePath(), moment.Note);
             return false;
         }
-        _moduleIO.FileWriteAllText(moment.GetSavePath(), moment.Note);
-        return false;
+        if (_moduleIO.FileExists(correctEpisodePath))
+        {
+            _mpegModule.TrimedVideo(correctEpisodePath, moment.GetSavePath(true), moment.Start, moment.SecondsDuration);
+            moment.RepairMoment();
+            momentWillbeCreate = true;
+        }
+        if (deleteInvalidTxt)
+        {
+            _moduleIO.DeleteFile(moment.GetSavePath());
+        }
+
+        return momentWillbeCreate;
     }
 
     public void Processed(List<Season> seasons, string saveDirectory)
@@ -158,7 +174,7 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
                     {
                         continue;
                     }
-                    var data = new MergeData(moment, episode, partData.data.Part, moment.GetSaveName(season, episode));
+                    var data = new MergeData(moment, episode, season, partData.data.Part, moment.GetSaveName(season, episode));
                     if (partData.data.GlobalId.HasValue)
                     {
                         forGlobalMergeMoments.AddItemInListInDict(partData.data.GlobalId.Value, data);
@@ -169,7 +185,7 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
                     }
                 }
             }
-            MergeMoments(forMergeInSeasons, saveDirectory);
+            MergeMoments(forMergeInSeasons, season.GetSeasonPath(saveDirectory));
         }
 
         MergeMoments(forGlobalMergeMoments, saveDirectory);

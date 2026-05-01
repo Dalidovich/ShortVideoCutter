@@ -91,4 +91,14 @@ public class MapperTest
         mergeData.Part.Should().Be(ExpectedPart);
         mergeData.GlobalId.Should().Be(ExpectedGlobalId);
     }
+
+    [Theory]
+    [InlineData(@"PATH(a:\pathh)", @"a:\pathh")]
+    [InlineData(@"Path(a:\pathh)", null)]
+    [InlineData(@"PATH()", null)]
+    public void TestCorrectPath(string note, string? path)
+    {
+        var moment = new Moment(new TimeSpan(1, 1, 1), new TimeSpan(1, 1, 1), note);
+        moment.GetCorrectEpisodePathOrDefault().Should().Be(path);
+    }
 }

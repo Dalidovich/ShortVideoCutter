@@ -94,4 +94,15 @@ public class Moment
         Note.Replace(InvalidTrigger, "");
         _status = null;
     }
+
+    public string GetCorrectEpisodePathOrDefault()
+    {
+        var pattern = new Regex(@"PATH\(([A-Za-z]:\\[^<>:""|?*\n]+|[/~\\][^\n()]*)\)");
+        var match = pattern.Match(Note);
+        if (match.Success)
+        {
+            return match.Groups[1].Value;
+        }
+        return null;
+    }
 }
