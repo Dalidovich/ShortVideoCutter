@@ -24,8 +24,9 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
             var mergePartsOfMomentDirectory = 
                 Path.Combine(saveDirectory, 
                 $"SplitMomentWithId{listOfMergeData.Key}_{listOfMergeData.Value.FirstOrDefault()?.Season.EnName}_" +
-                $"({listOfMergeData.Value.Count})_{DateTimeOffset.Now.ToUnixTimeMilliseconds()}");
+                $"({listOfMergeData.Value.Count})");
             _moduleIO.InitDirectory(mergePartsOfMomentDirectory);
+
             // Check invalid separate moments
             if (!_CheckMergeDataOnCorrectSequence(listOfMergeData.Value))
             {
@@ -46,7 +47,7 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
                 continue;
             }
 
-            // Trim separete moment
+            // Trim separate moment
             foreach (var mergeData in listOfMergeData.Value)
             {
                 _mpegModule.TrimedVideo(

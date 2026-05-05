@@ -1,5 +1,6 @@
 ﻿using ShortVideoCutter.Interfaces;
 using ShortVideoCutter.Modules;
+using System.Threading.Tasks;
 
 namespace ShortVideoCutter.DI;
 
@@ -10,6 +11,7 @@ public static class DIOwner
     public static void DefaultRegistrate()
     {
         DI.RegistrateService<IConverterVideoProcessor, ConverterVideoProcessor>();
+        DI.RegistrateService<IStatistic, Statistic>();
         DI.RegistrateService<IModuleIO, ModuleIO>();
         DI.RegistrateService<IMapper, Mapper>();
         DI.RegistrateService<IDownloader, Downloader>();

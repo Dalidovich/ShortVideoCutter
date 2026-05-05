@@ -7,10 +7,11 @@ public class Program
 {
     static async Task Main(string[] args)
     {
-        // time for open and focus new browser tab
-        await Task.Delay(5000);
-
         DIOwner.DefaultRegistrate();
+        var statistic = DIOwner.DI.GetService<IStatistic>();
+
+        // time for open and focus new browser tab
+        await statistic.DelayBeforeStart(0);
 
         var data = File.ReadAllText(@"C:\Users\pops\Desktop\TT data.txt");
         var saveDirectory = @"C:\Users\pops\Downloads\testDownloadVideo";
@@ -22,5 +23,7 @@ public class Program
         var seasons = mapper.Init(data, saveDirectory);
         await clicker.InitDownloadLinks(seasons);
         converter.Processed(seasons, saveDirectory);
+
+        statistic.CreateStatistic(saveDirectory);
     }
 }
