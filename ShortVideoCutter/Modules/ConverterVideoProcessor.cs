@@ -8,11 +8,13 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
 {
     private readonly IModuleIO _moduleIO;
     private readonly IFFMpegModule _mpegModule;
+    private readonly IMapper _mapper;
 
-    public ConverterVideoProcessor(IModuleIO moduleIO, IFFMpegModule mpegModule)
+    public ConverterVideoProcessor(IModuleIO moduleIO, IFFMpegModule mpegModule, IMapper mapper)
     {
         _moduleIO = moduleIO;
         _mpegModule = mpegModule;
+        _mapper = mapper;
     }
 
     public void MergeMoments(Dictionary<int, List<MergeData>> mergeDict, string saveDirectory)
@@ -98,6 +100,7 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
         }
         if (_moduleIO.FileExists(correctEpisodePath))
         {
+            moment.OverwriteTimes(_mapper);
             _mpegModule.TrimedVideo(correctEpisodePath, moment.GetSavePath(true), moment.Start, moment.SecondsDuration);
             moment.RepairMoment();
             momentWillbeCreate = true;

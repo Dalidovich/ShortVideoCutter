@@ -12,8 +12,8 @@ public class Program
 
         DIOwner.DefaultRegistrate();
 
-        var data = File.ReadAllText(@"path to txt file");
-        var saveDirectory = @"save dir";
+        var data = File.ReadAllText(@"C:\Users\pops\Desktop\TT data.txt");
+        var saveDirectory = @"C:\Users\pops\Downloads\testDownloadVideo";
 
         var mapper = DIOwner.DI.GetService<IMapper>();
         var clicker = DIOwner.DI.GetService<IClicker>();

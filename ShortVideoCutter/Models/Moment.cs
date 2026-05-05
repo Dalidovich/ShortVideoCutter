@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using ShortVideoCutter.Interfaces;
+using System.Text.RegularExpressions;
 
 namespace ShortVideoCutter.Models;
 
@@ -104,5 +105,19 @@ public class Moment
             return match.Groups[1].Value;
         }
         return null;
+    }
+
+    public void OverwriteTimes(IMapper mapper)
+    {
+        var match = new Regex(@"START\((.*?)\)").Match(Note);
+        if (match.Success && mapper.ParseTimeSpan(match.Groups[1].Value) is { } startTime)
+        {
+            StartTime = startTime;
+        }
+        match = new Regex(@"END\((.*?)\)").Match(Note);
+        if (match.Success && mapper.ParseTimeSpan(match.Groups[1].Value) is { } endTime)
+        {
+            EndTime = endTime;
+        }
     }
 }

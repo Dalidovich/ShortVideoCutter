@@ -75,12 +75,17 @@ public class Mapper : IMapper
         var episodeNumber = int.Parse(parametrs[0]);
         var startTime = ParseTimeSpan(parametrs[1]);
         var endTime = ParseTimeSpan(parametrs[2]);
+        if (startTime == null || endTime == null)
+        {
+            throw new Exception($"Invalid Date parse - '{x}'");
+        }
+
         var note = string.Empty;
         if (parametrs.Length >= 4)
         {
             note = string.Join(' ', parametrs.Skip(3).ToArray());
         }
-        return new Episode(episodeNumber, startTime, endTime, note);
+        return new Episode(episodeNumber, (TimeSpan)startTime, (TimeSpan)endTime, note);
     }
 
     public Season InspectEpisodeMoments(Season season)
@@ -103,7 +108,7 @@ public class Mapper : IMapper
         return season;
     }
 
-    public TimeSpan ParseTimeSpan(string x)
+    public TimeSpan? ParseTimeSpan(string x)
     {
         if (TimeSpan.TryParseExact(x, "m':'ss", CultureInfo.InvariantCulture, out var timeSpan))
         {
@@ -115,6 +120,6 @@ public class Mapper : IMapper
             return timeSpanWithHour;
         }
 
-        throw new Exception($"Invalid Date parse - '{x}'");
+        return null;
     }
 }

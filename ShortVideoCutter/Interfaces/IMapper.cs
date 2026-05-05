@@ -14,5 +14,5 @@ public interface IMapper : IService
 
     public Season InspectEpisodeMoments(Season season);
 
-    public TimeSpan ParseTimeSpan(string x);
+    public TimeSpan? ParseTimeSpan(string x);
 }

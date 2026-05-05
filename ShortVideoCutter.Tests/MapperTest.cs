@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using ShortVideoCutter.Models;
 using ShortVideoCutter.Modules;
+using System.Globalization;
+using System.Net.Http.Headers;
 
 namespace ShortVideoCutter.Tests;
 
@@ -41,7 +43,7 @@ public class MapperTest
         var mapper = new Mapper(mockedModuleIO);
         var mockedFFMpegModule = MockFactory.CreateFFMpegModule(momentFiles);
         var downloader = new Downloader(mockedModuleIO);
-        var converter = new ConverterVideoProcessor(mockedModuleIO, mockedFFMpegModule);
+        var converter = new ConverterVideoProcessor(mockedModuleIO, mockedFFMpegModule, mapper);
 
         var seasons = mapper.Init(data, saveDirectory);
         await mockedClicker.InitDownloadLinks(seasons);
@@ -100,5 +102,27 @@ public class MapperTest
     {
         var moment = new Moment(new TimeSpan(1, 1, 1), new TimeSpan(1, 1, 1), note);
         moment.GetCorrectEpisodePathOrDefault().Should().Be(path);
+    }
+
+    [Theory]
+    [InlineData(@"START(2:21)END(3:31)", "2:21", "3:31")]
+    [InlineData(@"END(3:32)", "1:10", "3:32")]
+    [InlineData(@"START(2:23)", "2:23", "1:10")]
+    [InlineData(@"", "1:10", "1:10")]
+    public void TestOverwritePath(string note, string expectedStartTimeStr, string expectedEndTimeStr)
+    {
+        var textFiles = new List<string>();
+        var mockedModuleIO = MockFactory.CreateModuleIO(textFiles);
+        var mapper = new Mapper(mockedModuleIO);
+        var expectedStartTime = TimeSpan.ParseExact(expectedStartTimeStr, "m':'ss", CultureInfo.InvariantCulture);
+        var expectedEndTime = TimeSpan.ParseExact(expectedEndTimeStr, "m':'ss", CultureInfo.InvariantCulture);
+        var currentTime = TimeSpan.ParseExact("1:10", "m':'ss", CultureInfo.InvariantCulture);
+
+        var moment = new Moment(currentTime, currentTime, note);
+
+        moment.OverwriteTimes(mapper);
+
+        moment.StartTime.Should().Be(expectedStartTime);
+        moment.EndTime.Should().Be(expectedEndTime);
     }
 }
