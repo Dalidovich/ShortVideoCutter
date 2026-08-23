@@ -1,6 +1,5 @@
 ﻿using ShortVideoCutter.Interfaces;
 using ShortVideoCutter.Modules;
-using System.Threading.Tasks;
 
 namespace ShortVideoCutter.DI;
 
@@ -17,6 +16,7 @@ public static class DIOwner
         DI.RegistrateService<IDownloader, Downloader>();
         DI.RegistrateService<IClicker, Clicker>();
         DI.RegistrateService<IFFMpegModule, FFMpegModule>();
+        DI.RegistrateService<IExporter, Exporter>();
 
         DI.Run();
     }
