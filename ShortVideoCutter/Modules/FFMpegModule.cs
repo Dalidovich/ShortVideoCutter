@@ -31,11 +31,11 @@ public class FFMpegModule : IFFMpegModule
         Console.WriteLine($"Moment {Path.GetFileName(outputFile)} end trim");
     }
 
-    public void MergeMoments(string[] inputFiles, string outputFile)
+    public void MergeMoments(string[] inputFiles, string outputFileDir)
     {
         var ffmpeg = new FFMpegConverter();
 
-        ffmpeg.ConcatMedia(inputFiles, outputFile, Format.mp4, new ConcatSettings()
+        ffmpeg.ConcatMedia(inputFiles, Path.Combine(outputFileDir,"final.mp4"), Format.mp4, new ConcatSettings()
         {
             ConcatAudioStream = true,
             ConcatVideoStream = true,

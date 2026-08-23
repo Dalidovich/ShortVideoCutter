@@ -122,4 +122,17 @@ public class Mapper : IMapper
 
         return null;
     }
+
+    public void Check(List<Season> seasons)
+    {
+        if (seasons.Select(x=>x.EnName).ToHashSet().Count!=seasons.Count)
+        {
+            var nameDuplicates = seasons
+                .GroupBy(x => x.EnName)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+            throw new Exception($"exist en Name duplicate ({string.Join(", ",nameDuplicates)})");
+        }
+    }
 }

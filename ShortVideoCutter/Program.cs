@@ -11,7 +11,7 @@ public class Program
         var statistic = DIOwner.DI.GetService<IStatistic>();
 
         // time for open and focus new browser tab
-        await statistic.DelayBeforeStart(0);
+        await statistic.DelayBeforeStart(100);
 
         var data = File.ReadAllText(@"C:\Users\pops\Desktop\TT data.txt");
         var saveDirectory = @"C:\Users\pops\Downloads\testDownloadVideo";
@@ -21,6 +21,9 @@ public class Program
         var converter = DIOwner.DI.GetService<IConverterVideoProcessor>();
 
         var seasons = mapper.Init(data, saveDirectory);
+
+        mapper.Check(seasons);
+
         await clicker.InitDownloadLinks(seasons);
         converter.Processed(seasons, saveDirectory);
 
