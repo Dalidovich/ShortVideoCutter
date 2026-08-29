@@ -132,7 +132,28 @@ public class Mapper : IMapper
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToList();
-            throw new Exception($"exist en Name duplicate ({string.Join(", ",nameDuplicates)})");
+            throw new Exception($"Exist en Name duplicate ({string.Join(", ",nameDuplicates)})");
+        }
+
+        foreach (var season in seasons)
+        {
+            _TriggerCheck(season);
+            foreach (var episode in season.Episodes)
+            {
+                _TriggerCheck(episode);
+                foreach (var moment in episode.Moments)
+                {
+                    _TriggerCheck(moment);
+                }
+            }
+        }
+    }
+
+    private void _TriggerCheck(IModelChecker model)
+    {
+        if (model.HelthCheck() is { } ex)
+        {
+            throw new Exception(ex);
         }
     }
 }

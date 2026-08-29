@@ -1,6 +1,8 @@
-﻿namespace ShortVideoCutter.Models;
+﻿using ShortVideoCutter.Interfaces;
 
-public class Season
+namespace ShortVideoCutter.Models;
+
+public class Season : IModelChecker
 {
     public string EnName { get; set; } = string.Empty;
 
@@ -36,5 +38,15 @@ public class Season
     public override string ToString()
     {
         return $"{EnName}({Episodes.Count})";
+    }
+
+    public string HelthCheck()
+    {
+        if (Episodes.Count <= 0)
+        {
+            return $"Episodes count is zero or negative";
+        }
+
+        return null;
     }
 }

@@ -9,8 +9,8 @@ public class Program
     static async Task Main(string[] args)
     {
         var textData = @"C:\Users\pops\Desktop\TT data.txt";
-        var saveDirectory = @"C:\Users\pops\Downloads\testDownloadVideo";
-        var exportDir = @"C:\Users\pops\Downloads\forExportMoments";
+        var saveDirectory = @"D:\MomentLibrary\createAndDounload";
+        var exportDir = @"D:\MomentLibrary\exportedMoments";
 
         DIOwner.DefaultRegistrate();
 

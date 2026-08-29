@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace ShortVideoCutter.Models;
 
-public class Moment
+public class Moment : IModelChecker
 {
     public const string InvalidTrigger = "!";
 
@@ -119,5 +119,15 @@ public class Moment
         {
             EndTime = endTime;
         }
+    }
+
+    public string HelthCheck()
+    {
+        if (SecondsDuration <= 0 || Start < 0)
+        {
+            return $"Invalid time mark";
+        }
+
+        return null;
     }
 }

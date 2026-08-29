@@ -1,6 +1,9 @@
-﻿namespace ShortVideoCutter.Models;
+﻿using ShortVideoCutter.Interfaces;
+using System.Collections.Generic;
 
-public class Episode
+namespace ShortVideoCutter.Models;
+
+public class Episode : IModelChecker
 {
     public int EpisodeNumber { get; set; }
 
@@ -41,5 +44,20 @@ public class Episode
     public override string ToString()
     {
         return $"num {EpisodeNumber}({Moments.Count})";
+    }
+
+    public string HelthCheck()
+    {
+        if (EpisodeNumber < 0)
+        {
+            return $"Invalid EpisodeNumber";
+        }
+
+        if (Moments.Count <= 0)
+        {
+            return $"Moments count is zero or negative";
+        }
+
+        return null;
     }
 }
