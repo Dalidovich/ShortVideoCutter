@@ -8,7 +8,7 @@ public class Program
 {
     static async Task Main(string[] args)
     {
-        var textData = @"C:\Users\pops\Desktop\TT data.txt";
+        var textData = @"D:\MomentLibrary\TT data.txt";
         var saveDirectory = @"D:\MomentLibrary\createAndDounload";
         var exportDir = @"D:\MomentLibrary\exportedMoments";
 
