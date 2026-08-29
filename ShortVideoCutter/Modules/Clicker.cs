@@ -1,6 +1,7 @@
 ﻿using ShortVideoCutter.DeviceImitations;
 using ShortVideoCutter.Interfaces;
 using ShortVideoCutter.Models;
+using System.Threading.Tasks;
 
 namespace ShortVideoCutter.Modules;
 
@@ -27,6 +28,18 @@ public class Clicker : IClicker
         }
     }
 
+    public async Task TestRequestClick()
+    {
+        await Task.Delay(2 * _delayTime);
+        OnRequestClick();
+    }
+
+    private void OnRequestClick()
+    {
+        // On request
+        InputDeviceImitationManager.MouseClick((1228, 349), true);
+    }
+
     public async Task InitDownloadLink(Season season)
     {
         foreach (var episode in season.Episodes)
@@ -48,8 +61,7 @@ public class Clicker : IClicker
             await Task.Delay(2 * _delayTime);
             InputDeviceImitationManager.Click(ButtonsCnst.VK_F5);
             await Task.Delay(2 * _delayTime);
-            // On request
-            InputDeviceImitationManager.MouseClick((1228, 349), true);
+            OnRequestClick();
             await Task.Delay(1 * _delayTime);
             // On open in new tab
             InputDeviceImitationManager.MouseClick((1301, 377));

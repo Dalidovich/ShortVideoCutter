@@ -26,6 +26,12 @@ public class Program
         Console.WriteLine($"Export {momentsCount} moments");
     }
 
+    public static async Task TrainClicker()
+    {
+        var clicker = DIOwner.DI.GetService<IClicker>();
+        await clicker.TestRequestClick();
+    }
+
     public static async Task Work(string textData, string saveDirectory)
     {
         var statistic = DIOwner.DI.GetService<IStatistic>();
