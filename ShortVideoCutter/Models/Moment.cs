@@ -1,4 +1,5 @@
-﻿using ShortVideoCutter.Interfaces;
+﻿using ShortVideoCutter.Interfaces.ModelInterfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using System.Text.RegularExpressions;
 
 namespace ShortVideoCutter.Models;
@@ -16,7 +17,7 @@ public class Moment : IModelChecker
     public float SecondsDuration => (float)(EndTime.TotalSeconds - StartTime.TotalSeconds);
     public float Start => (float)StartTime.TotalSeconds;
 
-    private MomentStatus? _status = null;
+    private EMomentStatus? _status = null;
 
     private string _savePath = string.Empty;
 
@@ -40,7 +41,7 @@ public class Moment : IModelChecker
         }
         return _status switch
         {
-            MomentStatus.Invalid => $"{_savePath}.txt",
+            EMomentStatus.Invalid => $"{_savePath}.txt",
             _ => $"{_savePath}.mp4",
         };
     }
@@ -51,23 +52,23 @@ public class Moment : IModelChecker
         _savePath = Path.Combine(dir, GetSaveName(season, episode));
     }
 
-    public MomentStatus GetStatus()
+    public EMomentStatus GetStatus()
     {
         if (_status.HasValue)
         {
             return _status.Value;
         }
 
-        var activeStatuses = new List<MomentStatus?>()
+        var activeStatuses = new List<EMomentStatus?>()
         {
-            IsInvalidMoment() ? MomentStatus.Invalid : null,
-            IsPartMoment().isPart ? MomentStatus.Part : null,
-            MomentStatus.Simple
+            IsInvalidMoment() ? EMomentStatus.Invalid : null,
+            IsPartMoment().isPart ? EMomentStatus.Part : null,
+            EMomentStatus.Simple
         };
 
         _status = activeStatuses.Where(x => x.HasValue).Select(x => x.Value).FirstOrDefault();
 
-        return _status ?? MomentStatus.Invalid;
+        return _status ?? EMomentStatus.Invalid;
     }
 
     public bool IsInvalidMoment() => Note.Contains(InvalidTrigger);

@@ -1,5 +1,5 @@
 ﻿using ShortVideoCutter.DI;
-using ShortVideoCutter.Interfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using ShortVideoCutter.Modules;
 
 namespace ShortVideoCutter;

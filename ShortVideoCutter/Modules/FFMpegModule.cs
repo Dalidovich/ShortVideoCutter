@@ -1,5 +1,5 @@
 ﻿using NReco.VideoConverter;
-using ShortVideoCutter.Interfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 
 namespace ShortVideoCutter.Modules;
 

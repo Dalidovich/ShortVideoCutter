@@ -1,6 +1,6 @@
 ﻿namespace ShortVideoCutter.Models;
 
-public enum MomentStatus
+public enum EMomentStatus
 {
     Invalid = 0,
     Part = 1,

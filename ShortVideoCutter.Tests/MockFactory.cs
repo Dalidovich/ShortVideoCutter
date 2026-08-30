@@ -1,5 +1,5 @@
 ﻿using Moq;
-using ShortVideoCutter.Interfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using ShortVideoCutter.Models;
 
 namespace ShortVideoCutter.Tests;

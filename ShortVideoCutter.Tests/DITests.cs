@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using ShortVideoCutter.DI;
-using ShortVideoCutter.Interfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 
 namespace ShortVideoCutter.Tests;
 

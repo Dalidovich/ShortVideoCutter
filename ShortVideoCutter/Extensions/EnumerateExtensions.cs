@@ -4,7 +4,7 @@ namespace ShortVideoCutter.Extensions;
 
 public static class EnumerateExtensions
 {
-    public static int CountPartsConditionStatus(this List<MergeData> mergeDatas, MomentStatus status)
+    public static int CountPartsConditionStatus(this List<MergeData> mergeDatas, EMomentStatus status)
     {
         return mergeDatas.Count(x => x.Moment.GetStatus() == status);
     }

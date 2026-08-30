@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using ShortVideoCutter.Exceptions;
 using ShortVideoCutter.Models;
 using ShortVideoCutter.Modules;
 using System.Globalization;
@@ -68,13 +69,13 @@ public class MapperTest
     }
 
     [Theory]
-    [InlineData("ID2PART1GLOB1", MomentStatus.Part)]
-    [InlineData("ID2PART1", MomentStatus.Part)]
-    [InlineData("ID2P1", MomentStatus.Simple)]
-    [InlineData("#fsdvsv", MomentStatus.Simple)]
-    [InlineData("!ID2PART1", MomentStatus.Invalid)]
-    [InlineData("!", MomentStatus.Invalid)]
-    public void TestParseStatus(string note, MomentStatus Expectedstatus)
+    [InlineData("ID2PART1GLOB1", EMomentStatus.Part)]
+    [InlineData("ID2PART1", EMomentStatus.Part)]
+    [InlineData("ID2P1", EMomentStatus.Simple)]
+    [InlineData("#fsdvsv", EMomentStatus.Simple)]
+    [InlineData("!ID2PART1", EMomentStatus.Invalid)]
+    [InlineData("!", EMomentStatus.Invalid)]
+    public void TestParseStatus(string note, EMomentStatus Expectedstatus)
     {
         var moment = new Moment(new TimeSpan(1, 1, 1), new TimeSpan(1, 1, 1), note);
         moment.GetStatus().Should().Be(Expectedstatus);
@@ -86,7 +87,7 @@ public class MapperTest
     public void TestParseMergeData(string note, int ExpectedId, int ExpectedPart, int? ExpectedGlobalId)
     {
         var moment = new Moment(new TimeSpan(1, 1, 1), new TimeSpan(1, 1, 1), note);
-        moment.GetStatus().Should().Be(MomentStatus.Part);
+        moment.GetStatus().Should().Be(EMomentStatus.Part);
         var mergeData = moment.IsPartMoment().data;
         mergeData.Should().NotBeNull();
         mergeData.Id.Should().Be(ExpectedId);
@@ -124,5 +125,60 @@ public class MapperTest
 
         moment.StartTime.Should().Be(expectedStartTime);
         moment.EndTime.Should().Be(expectedEndTime);
+    }
+
+    [Theory]
+    [InlineData("""
+            ru1                          
+            en1                          
+            url1
+            
+            ---
+        """, "zero seasons")]
+    [InlineData("""
+            ru1                          
+            en1                          
+            url1
+            ---
+        """, "zero seasons")]
+    [InlineData("""
+            ru1                          
+            en1                          
+            url1
+            1 0:00 1:00   
+            ---
+            ru1                          
+            en1                          
+            url1
+            1 0:00 1:00   
+        """, "Exist en Name duplicate (en1)")]
+    [InlineData("""
+            ru1                          
+            en1                          
+            url1                         
+            1 0:00 0:00    
+        """, "Invalid time mark")]
+    [InlineData("""
+            ru1                          
+            en1                          
+            url1                         
+            1 
+        """, "Episodes count is zero or negative")]
+    public void InvalidThrowInMapper(string data, string message)
+    {
+        var textFiles = new List<string>();
+        var momentFiles = new List<string>();
+
+        var saveDirectory = @"sd";
+        var expectedSeasons = AssertData.GetCorrectData(saveDirectory);
+
+        var mockedModuleIO = MockFactory.CreateModuleIO(textFiles);
+        var mapper = new Mapper(mockedModuleIO);
+
+        var seasons = mapper.Init(data, saveDirectory);
+        Action act = () => mapper.Check(seasons);
+
+        act.Should().Throw<VideoCutterModuleException>()
+            .WithMessage($"VideoCutterModuleException:{message}");
     }
 }

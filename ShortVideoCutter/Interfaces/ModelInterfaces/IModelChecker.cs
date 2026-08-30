@@ -1,4 +1,4 @@
-﻿namespace ShortVideoCutter.Interfaces;
+﻿namespace ShortVideoCutter.Interfaces.ModelInterfaces;
 
 public interface IModelChecker
 {

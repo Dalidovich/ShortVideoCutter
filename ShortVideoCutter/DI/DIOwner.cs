@@ -1,4 +1,4 @@
-﻿using ShortVideoCutter.Interfaces;
+﻿using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using ShortVideoCutter.Modules;
 
 namespace ShortVideoCutter.DI;

@@ -1,4 +1,5 @@
-﻿using ShortVideoCutter.Interfaces;
+﻿using ShortVideoCutter.Exceptions;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 
 namespace ShortVideoCutter.Modules;
 
@@ -48,7 +49,7 @@ public class Exporter : IExporter
 
         if (videos.Length != count)
         {
-            throw new Exception($"Export exist video count not match to agree count ({videos.Length} exist / {count} argee)");
+            throw new VideoCutterModuleException($"Export exist video count not match to agree count ({videos.Length} exist / {count} argee)");
         }
     }
 }

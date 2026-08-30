@@ -1,5 +1,5 @@
 ﻿using ShortVideoCutter.Extensions;
-using ShortVideoCutter.Interfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using ShortVideoCutter.Models;
 
 namespace ShortVideoCutter.Modules;
@@ -33,7 +33,7 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
                 _moduleIO.FileWriteAllText(
                     $"{Path.Combine(mergePartsOfMomentDirectory, $"WrongSeq({listOfMergeData.Value.Count}).txt")}",
                     $"Have parts: {string.Join(", ", listOfMergeData.Value.Select(x => x.Part))}\n" +
-                    $"Have {listOfMergeData.Value.CountPartsConditionStatus(MomentStatus.Invalid)} invalid parts");
+                    $"Have {listOfMergeData.Value.CountPartsConditionStatus(EMomentStatus.Invalid)} invalid parts");
                 continue;
             }
 
@@ -70,14 +70,14 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
     {
         var set = mergeDatas.Select(x => x.Part).ToHashSet();
         // List of moment in line sequence and not contain invalid moment
-        return mergeDatas.CountPartsConditionStatus(MomentStatus.Invalid) == 0
+        return mergeDatas.CountPartsConditionStatus(EMomentStatus.Invalid) == 0
             && set.Count == mergeDatas.Count
             && set.Sum() == set.Count * (set.Count + 1) / 2;
     }
 
     public bool TryProcessedInvalidMoment(Moment moment)
     {
-        if (moment.GetStatus() != MomentStatus.Invalid)
+        if (moment.GetStatus() != EMomentStatus.Invalid)
         {
             return true;
         }
@@ -123,7 +123,7 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
 
     public void ProcessedSimpleMoments(List<Season> seasons, string saveDirectory)
     {
-        var actualStatus = MomentStatus.Simple;
+        var actualStatus = EMomentStatus.Simple;
 
         foreach (var season in seasons)
         {
@@ -143,7 +143,7 @@ public class ConverterVideoProcessor : IConverterVideoProcessor
 
     public void ProcessedInvalidMoments(List<Season> seasons, string saveDirectory)
     {
-        var actualStatus = MomentStatus.Invalid;
+        var actualStatus = EMomentStatus.Invalid;
 
         foreach (var season in seasons)
         {

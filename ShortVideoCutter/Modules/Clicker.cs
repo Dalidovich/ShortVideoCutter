@@ -1,5 +1,5 @@
 ﻿using ShortVideoCutter.DeviceImitations;
-using ShortVideoCutter.Interfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using ShortVideoCutter.Models;
 using System.Threading.Tasks;
 

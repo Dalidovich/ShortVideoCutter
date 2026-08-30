@@ -1,5 +1,6 @@
-﻿using ShortVideoCutter.Extensions;
-using ShortVideoCutter.Interfaces;
+﻿using ShortVideoCutter.Exceptions;
+using ShortVideoCutter.Extensions;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using System.Reflection;
 
 namespace ShortVideoCutter.DI;
@@ -71,23 +72,23 @@ public class LittleDI
         var availableCtors = constructors.Where(condition);
         if (!availableCtors.Any())
         {
-            throw new Exception("No constructor is suitable");
+            throw new VideoCutterDIException("No constructor is suitable");
         }
 
         // if exist same length available constructors
         if (availableCtors.Select(x => x.GetParameters().Length).ToHashSet().Count != availableCtors.Count())
         {
-            throw new Exception("Exist same length available constructors");
+            throw new VideoCutterDIException("Exist same length available constructors");
         }
         return availableCtors.OrderBy(x => x.GetParameters().Length).Last();
     }
 
-    public void RegistrateService<TServiceSignature, TInstanseServiceType>(ServiceLifespan lifespan = ServiceLifespan.Singleton)
+    public void RegistrateService<TServiceSignature, TInstanseServiceType>(EServiceLifespan lifespan = EServiceLifespan.Singleton)
     {
         _initialBuffer.Add(new InitServiceData(typeof(TServiceSignature), typeof(TInstanseServiceType), lifespan));
     }
 
-    private void AddService(Type serviceSignature, Type instanseServiceType, ServiceLifespan lifespan = ServiceLifespan.Singleton)
+    private void AddService(Type serviceSignature, Type instanseServiceType, EServiceLifespan lifespan = EServiceLifespan.Singleton)
     {
         ConstructorInfo[] constructors = instanseServiceType.GetConstructors();
 
@@ -95,7 +96,7 @@ public class LittleDI
         var fullishAvailableCtor = GetFullishAvailableConstructor(instanseServiceType, IsSuitableCtor);
         var parametars = fullishAvailableCtor.GetParameters().Select(x => GetService(x.ParameterType));
 
-        if (lifespan == ServiceLifespan.AlwaysNew)
+        if (lifespan == EServiceLifespan.AlwaysNew)
         {
             _services.AddItemInListInDict(serviceSignature, new(null, lifespan, instanseServiceType, fullishAvailableCtor));
         }
@@ -135,7 +136,7 @@ public class LittleDI
     {
         return serviceData.Lifespan switch
         {
-            ServiceLifespan.Singleton => serviceData.Service,
+            EServiceLifespan.Singleton => serviceData.Service,
             _ => CreateNewInstance(serviceData)
         };
     }

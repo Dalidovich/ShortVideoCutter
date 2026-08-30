@@ -1,6 +1,6 @@
 ﻿using ShortVideoCutter.Models;
 
-namespace ShortVideoCutter.Interfaces;
+namespace ShortVideoCutter.Interfaces.ModuleInterfaces;
 
 public interface IConverterVideoProcessor : IService
 {

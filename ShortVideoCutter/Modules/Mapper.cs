@@ -1,4 +1,6 @@
-﻿using ShortVideoCutter.Interfaces;
+﻿using ShortVideoCutter.Exceptions;
+using ShortVideoCutter.Interfaces.ModelInterfaces;
+using ShortVideoCutter.Interfaces.ModuleInterfaces;
 using ShortVideoCutter.Models;
 using System.Globalization;
 
@@ -77,7 +79,7 @@ public class Mapper : IMapper
         var endTime = ParseTimeSpan(parametrs[2]);
         if (startTime == null || endTime == null)
         {
-            throw new Exception($"Invalid Date parse - '{x}'");
+            throw new VideoCutterModuleException($"Invalid Date parse - '{x}'");
         }
 
         var note = string.Empty;
@@ -125,6 +127,11 @@ public class Mapper : IMapper
 
     public void Check(List<Season> seasons)
     {
+        if (seasons.Count == 0)
+        {
+            throw new VideoCutterModuleException($"zero seasons");
+        }
+
         if (seasons.Select(x=>x.EnName).ToHashSet().Count!=seasons.Count)
         {
             var nameDuplicates = seasons
@@ -132,7 +139,7 @@ public class Mapper : IMapper
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key)
                 .ToList();
-            throw new Exception($"Exist en Name duplicate ({string.Join(", ",nameDuplicates)})");
+            throw new VideoCutterModuleException($"Exist en Name duplicate ({string.Join(", ",nameDuplicates)})");
         }
 
         foreach (var season in seasons)
@@ -153,7 +160,7 @@ public class Mapper : IMapper
     {
         if (model.HelthCheck() is { } ex)
         {
-            throw new Exception(ex);
+            throw new VideoCutterModuleException(ex);
         }
     }
 }

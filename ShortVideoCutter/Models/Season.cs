@@ -1,4 +1,4 @@
-﻿using ShortVideoCutter.Interfaces;
+﻿using ShortVideoCutter.Interfaces.ModelInterfaces;
 
 namespace ShortVideoCutter.Models;
 

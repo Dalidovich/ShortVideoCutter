@@ -1,6 +1,6 @@
 ﻿namespace ShortVideoCutter.DI;
 
-public enum ServiceLifespan
+public enum EServiceLifespan
 {
     Singleton = 0,
     AlwaysNew = 1,

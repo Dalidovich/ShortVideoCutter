@@ -1,4 +1,4 @@
-﻿namespace ShortVideoCutter.Interfaces;
+﻿namespace ShortVideoCutter.Interfaces.ModuleInterfaces;
 
 public interface IModuleIO : IService
 {
