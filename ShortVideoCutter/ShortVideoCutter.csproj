@@ -10,5 +10,5 @@
   <ItemGroup>
     <PackageReference Include="NReco.VideoConverter" Version="1.2.1" />
   </ItemGroup>
-
+	
 </Project>

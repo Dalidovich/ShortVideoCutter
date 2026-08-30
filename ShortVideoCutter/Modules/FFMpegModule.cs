@@ -34,9 +34,9 @@ public class FFMpegModule : IFFMpegModule
     public void MergeMoments(string[] inputFiles, string outputFileDir)
     {
         var ffmpeg = new FFMpegConverter();
-        var fileName =string.Join("_",outputFileDir.Split(Path.DirectorySeparatorChar).TakeLast(3).Take(2));
+        var fileName = string.Join("_", outputFileDir.Split(Path.DirectorySeparatorChar).TakeLast(3).Take(2));
 
-        ffmpeg.ConcatMedia(inputFiles, Path.Combine(outputFileDir,$"{fileName}.mp4"), Format.mp4, new ConcatSettings()
+        ffmpeg.ConcatMedia(inputFiles, Path.Combine(outputFileDir, $"{fileName}.mp4"), Format.mp4, new ConcatSettings()
         {
             ConcatAudioStream = true,
             ConcatVideoStream = true,
