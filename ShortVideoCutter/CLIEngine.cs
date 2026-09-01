@@ -8,11 +8,13 @@ public class CLIEngine
     private bool _work;
     private bool _export;
     private bool _clickTest;
+    private bool _exportAllNew;
 
     public CLIEngine(string[] args)
     {
         _work = args.Any(x=>x.Contains("--work"));
         _export = args.Any(x=>x.Contains("--export"));
+        _exportAllNew = args.Any(x=>x.Contains("--export-new"));
         _clickTest = args.Any(x=>x.Contains("--click"));
     }
 
@@ -24,7 +26,7 @@ public class CLIEngine
         }
 
         var exporter = DIOwner.DI.GetService<IExporter>();
-        var momentsCount = exporter.ExportAllMoment(saveDirectory, exportDir);
+        var momentsCount = exporter.ExportAllMoment(saveDirectory, exportDir, _exportAllNew);
         Console.WriteLine($"Export {momentsCount} moments");
     }
 

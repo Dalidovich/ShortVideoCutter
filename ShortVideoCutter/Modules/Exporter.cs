@@ -11,7 +11,7 @@ public class Exporter : IExporter
     {
         _moduleIO = moduleIO;
     }
-    public int ExportAllMoment(string exportDir, string sourceDir)
+    public int ExportAllMoment(string exportDir, string sourceDir, bool allNew)
     {
         var videos = Directory.GetFiles(sourceDir, "*.mp4", SearchOption.AllDirectories);
 
@@ -32,10 +32,19 @@ public class Exporter : IExporter
             }
         }
 
+        if (allNew)
+        {
+            Directory.Delete(exportDir, true);
+        }
+
         foreach (var video in readyMomentFiles)
         {
             _moduleIO.InitDirectory(Path.Combine(exportDir,video.folder));
-            File.Copy(video.video,Path.Combine(exportDir, video.folder,Path.GetFileName(video.video)));
+            var destPath = Path.Combine(exportDir, video.folder, Path.GetFileName(video.video));
+            if (!File.Exists(destPath))
+            {
+                File.Copy(video.video, destPath);
+            }
         }
 
         _check(exportDir, readyMomentFiles.Count);
