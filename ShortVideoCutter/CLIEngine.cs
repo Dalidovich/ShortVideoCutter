@@ -9,13 +9,34 @@ public class CLIEngine
     private bool _export;
     private bool _clickTest;
     private bool _exportAllNew;
+    private bool _help;
+
+    private readonly string[][] _flagsAttribute = [
+        ["-work","-w"],
+        ["-export","-e"],
+        ["-export-new","-en"],
+        ["-click","-c"],
+        ["-help","-h"]
+    ];
 
     public CLIEngine(string[] args)
     {
-        _work = args.Any(x=>x.Contains("--work"));
-        _export = args.Any(x=>x.Contains("--export"));
-        _exportAllNew = args.Any(x=>x.Contains("--export-new"));
-        _clickTest = args.Any(x=>x.Contains("--click"));
+        _work = args.Any(x => x.Contains(_flagsAttribute[0][0]) || x.Contains(_flagsAttribute[0][1]));
+        _export = args.Any(x => x.Contains(_flagsAttribute[1][0]) || x.Contains(_flagsAttribute[1][1]));
+        _exportAllNew = args.Any(x => x.Contains(_flagsAttribute[2][0]) || x.Contains(_flagsAttribute[2][1]));
+        _clickTest = args.Any(x => x.Contains(_flagsAttribute[3][0]) || x.Contains(_flagsAttribute[3][1]));
+        _help = args.Any(x => x.Contains(_flagsAttribute[4][0]) || x.Contains(_flagsAttribute[4][1]));
+    }
+
+    public void Help()
+    {
+        if (_help)
+        {
+            foreach (var flags in _flagsAttribute)
+            {
+                Console.WriteLine(String.Join(", ",flags));
+            }
+        }
     }
 
     public void ExportVideo(string saveDirectory, string exportDir)

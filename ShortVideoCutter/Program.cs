@@ -15,6 +15,8 @@ public class Program
     {
         var cli = new CLIEngine(args);
 
+        cli.Help();
+
         if (LocalSettings.Load() is { } settings)
         {
             await cli.Work(settings.TextData, settings.SaveDirectory);
