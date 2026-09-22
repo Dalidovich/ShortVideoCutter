@@ -84,7 +84,16 @@ public class Clicker : IClicker
     private string _GetModifyUrl(string url, Episode episode)
     {
         var formatting = episode.IsAdditionEpisode() ? _linkModifyPartForAddition : _linkModifyPart;
-        return $"{url}{string.Format(formatting, episode.EpisodeNumber, episode.Moments.First().StartTime.Minutes, episode.Moments.First().StartTime.Seconds)}";
+
+        var minutes = episode.Moments.First().StartTime.Minutes;
+        var seconds = episode.Moments.First().StartTime.Seconds;
+
+        if (seconds == 0 && minutes == 0)
+        {
+            seconds += 1;
+        }
+
+        return $"{url}{string.Format(formatting, episode.EpisodeNumber, minutes, seconds)}";
     }
 
     private void _NewWindow() => InputDeviceImitationManager.CompositeClick(ButtonsCnst.VK_CONTROL, ButtonsCnst.VK_SHIFT, ButtonsCnst.VK_N);
