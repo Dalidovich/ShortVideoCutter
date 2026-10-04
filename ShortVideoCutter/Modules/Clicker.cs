@@ -49,8 +49,13 @@ public class Clicker : IClicker
                 Console.WriteLine($"episode {Path.GetFileName(episode.GetSavePath())} alredy exist");
                 continue;
             }
+            if (episode.IsInvalidEpisodeToDownload())
+            {
+                Console.WriteLine($"episode {Path.GetFileName(episode.GetSavePath())} invalid yo download");
+                continue;
+            }
 
-            _NewWindow();
+                _NewWindow();
             await Task.Delay(1 * _delayTime);
             ClipboardManager.SetText(_GetModifyUrl(season.Url, episode));
             await Task.Delay(1 * _delayTime);

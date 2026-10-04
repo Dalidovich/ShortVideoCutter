@@ -6,7 +6,8 @@ namespace ShortVideoCutter.Models;
 
 public class Moment : IModelChecker
 {
-    public const string InvalidTrigger = "!";
+    public const string InvalidEpisodeTrigger = "!!";
+    public const string InvalidMomentTrigger = "!";
 
     public TimeSpan StartTime { get; set; }
 
@@ -26,6 +27,7 @@ public class Moment : IModelChecker
         StartTime = startTime;
         EndTime = endTime;
         Note = note;
+        GetStatus();
     }
 
     public string GetSaveName(Season season, Episode episode)
@@ -71,7 +73,8 @@ public class Moment : IModelChecker
         return _status ?? EMomentStatus.Invalid;
     }
 
-    public bool IsInvalidMoment() => Note.Contains(InvalidTrigger);
+    public bool IsInvalidMoment() => Note.Contains(InvalidMomentTrigger);
+    public bool IsInvalidEpisode() => Note.Contains(InvalidEpisodeTrigger);
 
     public (bool isPart, PartMomentData data) IsPartMoment()
     {
@@ -93,7 +96,8 @@ public class Moment : IModelChecker
 
     public void RepairMoment()
     {
-        Note.Replace(InvalidTrigger, "");
+        Note.Replace(InvalidMomentTrigger, "");
+        Note.Replace(InvalidEpisodeTrigger, "");
         _status = null;
     }
 

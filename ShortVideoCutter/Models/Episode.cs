@@ -46,6 +46,11 @@ public class Episode : IModelChecker
         return $"num {EpisodeNumber}({Moments.Count})";
     }
 
+    public bool IsInvalidEpisodeToDownload()
+    {
+        return Moments.Any(x => x.IsInvalidEpisode());
+    }
+
     public string HelthCheck()
     {
         if (EpisodeNumber < 0)
